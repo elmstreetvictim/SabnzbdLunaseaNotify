@@ -1,18 +1,5 @@
 #!/usr/bin/python
-
-###IMPORTANT
-
-### THIS IS NOT A "NOTIFICATION SCRIPT" IN SABNZBD
-### THIS IS A "POST PROCESSING SCRIPT"
-### AND IT RECEIVES A DIFFERENT GROUP OF ARGUMENTS
-### THAN NOTIFICATION SCRIPTS RECEIVE
-### PLACE THIS FILE IN THE DIRECTORY WHERE SABNZBD
-### SEARCHES FOR SCRIPTS. YOU SET THIS SCRIPT AS
-### ACTIVE ON THE 'CATEGORIES' PAGE OF SABNZBD
-### IN THE DROPDOWN BOX FOR SCRIPTS
-
-### IMPORTANT
-
+# -*- coding: UTF-8 -*-
 import os
 import sys
 import httplib
@@ -22,52 +9,74 @@ import requests
 import json
 
 try:
-    (scriptname,directory,orgnzbname,jobname,reportnumber,category,group,postprocstatus,url) = sys.argv
+    (scriptname, notification_type, notification_title, notification_text, parameters) = sys.argv
 except:
-    try:
-        # are we testing only?
-        directory = sys.argv[1]
+    print "No commandline parameters found"
+    sys.exit(1)
 
-    except:
-        print "No commandline parameters found"
-        sys.exit(1)
+## argv[1]:
+## Type of notification
+##   startup = Startup/Shutdown 🔔
+##   download = Added NZB 💾
+##   pp = Post-processing started ⏳
+##   complete = Job finished ✅
+##   failed = Job failed ❌
+##   warning = Warning ⚠️
+##   error = Error ⛔️
+##   disk_full = Disk full ⛔️
+##   queue_done = Queue finished ✅
+##   new_login = User logged in 🔔
+##   other = Other Messages 🔔
 
-## argv[n] - all passed as strings.
-## 1    The final directory of the job (full path)
-## 2    The original name of the NZB file
-## 3    Clean version of the job name (no path info and ".nzb" removed)
-## 4    Indexer's report number (if supported)
-## 5    User-defined category
-## 6    Group that the NZB was posted in e.g. alt.binaries.x
-## 7    Status of post processing. 0 = OK, 1=failed verification, 2=failed unpack, 3=1+21
-##
-## priority: from -2 (lowest) to 2 (highest) (def:0)
+## argv[2]: Localized Title
+
+## argv[3]: Job name
 
 def main(argv):
-    # Message will include the cleaned up job name
-    message = argv[3]
-    status = ''
-    if argv[7] == '0':
-        status = 'Complete'
-    elif argv[7] == '1':
-        status = 'Failed Verification'
-    elif argv[7] == '2':
-        status = 'Failed Unpack'
-    elif argv[7] == '3':
-        status = 'Failed Unpack + Verification'
-    else:
-        status = 'Failed'
 
-    # Combine the status and the job name, ie.
-    # [Complete]Steal This Film 2006 1080p Bluray x264
-    pushbullet('[' + status + ']' + message)
-    print status
+    # These are UTF-8 encoded emojis. In line 2 of this file the UTF-8 
+    # encoding is declared.
+    
+    notification_type = argv[1]
+    title = ''
+    if notification_type == 'complete':
+        title = '[✅]'
+    if notification_type == 'queue_done':
+        title = '[✅]'
+    elif notification_type == 'failed':
+        title = '[❌]'
+    elif notification_type == 'other':
+        title = '[🔔]'
+    elif notification_type == 'new_login':
+        title = '[🔔]'
+    elif notification_body == 'startup':
+        title = '[🔔]'
+    elif notification_type == 'download':
+        title = '[💾]'
+    elif notification_type == 'pp':
+        title = '[⏳]'
+    elif notification_type == 'error':
+        title = '[⛔️]'
+    elif notification_type == 'disk_full':
+        title = '[⛔️]'
+    elif notification_type == 'warning':
+        title = '[⚠️]'
+    else: 
+        title = argv[2]
+    notification_body = argv[3]
+    pushbullet(title,notification_body)
     sys.exit(0)
 
-def pushbullet(stringToPush):
-    appToken='YOUR_APP_TOKEN_HERE'
+def pushbullet(title,body):
+
+    # Pushbullet notifications on iOS only display the message title on the lock screen
+    # to see the message body on the lock screen we need to put the body and title together
+    # and send that string as the title of the message.
+
+    appToken='YOUR_API_TOKEN_HERE'
+    lock_screen_message = title + body
     postHeaders = {"Access-Token":appToken,"Content-Type":"application/json"}
-    body = {"type":"note","title":stringToPush,"body":stringToPush,"Content-Type": "application/json"}
+    body = {"type":"note","title":lock_screen_message,"body":body,"Content-Type": "application/json"}
     r = requests.post('https://api.pushbullet.com/v2/pushes',data=json.dumps(body),headers=postHeaders)
 
 
