@@ -49,7 +49,7 @@ def main(argv):
         title = '[🔔]'
     elif notification_type == 'new_login':
         title = '[🔔]'
-    elif notification_body == 'startup':
+    elif notification_type == 'startup':
         title = '[🔔]'
     elif notification_type == 'download':
         title = '[💾]'
@@ -62,7 +62,7 @@ def main(argv):
     elif notification_type == 'warning':
         title = '[⚠️]'
     else: 
-        title = argv[2]
+        title = '[' + argv[2] + ']'
     notification_body = argv[3]
     pushbullet(title,notification_body)
     sys.exit(0)
