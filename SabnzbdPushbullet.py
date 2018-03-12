@@ -41,7 +41,7 @@ def main(argv):
     title = ''
     if notification_type == 'complete':
         title = '[✅]'
-    if notification_type == 'queue_done':
+    elif notification_type == 'queue_done':
         title = '[✅]'
     elif notification_type == 'failed':
         title = '[❌]'
