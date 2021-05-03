@@ -3,7 +3,7 @@ Python script to send a notification for events within Sabnzbd to the custom not
 
 # Usage: 
 
-Open the script and change line 74 to put your device token, in quotes, after `device_token = `
+Open the script and change line 74. Add your device token, in quotes, after `device_token = `
 
 `device_token = "abcdefghijklm" `
 
