@@ -12,7 +12,7 @@ import requests
 import json
 
 ## argv[1]:
-## Type of notification
+## Type of notification, as a string argument
 ##   startup = Startup/Shutdown 🔔
 ##   download = Added NZB 💾
 ##   pp = Post-processing started ⏳
