@@ -3,6 +3,10 @@ Python script to send a notification for events within Sabnzbd to the custom not
 
 # Usage: 
 
+First, install requests
+
+`pip install requests`
+
 Open the script and change line 74. Add your device token, in quotes, after `device_token = `
 
 `device_token = "abcdefghijklm" `
